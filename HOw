@@ -1,0 +1,173 @@
+I don't know if this is of any help, but whenever I follow a guide I always make my own notes and follow those in the future. A friend of mine asked for a howto so I ellaborated a lot on my own notes and ended up sending him the following. It's based directly off Birb's with the prep switch and formatting SD cards being stuff I added before.
+
+Disclaimer: This might not suit all, for example it uses exosphere.ini instead of tinfoil incognito. I know this isn't to everyone's liking. Also lockpick is missing from this guide. One thing that should be noted about this method is that it should take you from an unadulterated unbanned switch to a EmuNAND switch in the safest possible way. We never leave Hekate once we boot into it, and we remove WiFi before hand. We never reconnect to the net before confirming the serial is blanked. Obviously for added protection, you can use tinfoil’s incognito (see addition at bottom).
+
+Also, I have everything needed to follow this guide zipped and upped to wetransfer, but pretty sure I am not allowed to post here.
+
+
+
+Edit: fixed formatting, Edit2: definitely not allowed to link to those files as I had forgotten I had a well known shop in the bottom of the guide and had to remove it. Edit: typos and a couple of additions included Tinfoil incognito.
+
+------- GUIDE --------
+Prep Switch
+Add any users - link Nintendo accounts, needed for some games
+
+Delete Wifi
+
+Remove unused apps
+
+Charge to at least 50%
+
+If an SD is used with sysNAND, move all back to internal or temp remove titles
+
+Prep SD
+Verify your SD is genuine with fakeflashtest and h2testw
+
+Format SD:
+
+In powershell or term:
+
+diskpart
+
+list disk
+
+select disk x
+
+clean
+
+convert mbr
+
+exit
+
+Now use the SD association format tool on the card (probably not entirely needed, but my switch wouldn't boot hekate without a 'clean' format this way)
+
+2. Grab hekate from github and extract the bootloader folder to root of SD
+
+3. Insert SD in switch
+
+RCM and format prep
+Power off the switch
+
+Insert jig or use modded joycon
+
+Connect to win with usb cable and open tegrarcm
+
+Hold vol+ and power for a second or so to enter RCM (then release), windows should ping to signify device connected - if the switch boots - this isn't right power off and try again - the screen should remain black.
+
+Inject hekate using tegraRCM (the bin from the archive)
+
+Goto tools > patition SD > drag emummc to exactly 29GB > [next step] > [Start]
+
+Note: Your bootloader folder should have been backed up and moved back to the fat32 partiton, which is now the majority of the sd card
+
+BACKUP!
+From hekate:
+
+Tools > Backup EmuMMC
+
+eMMC BOOT0 & BOOT1 - should say "Finished and Verified" when done, tap close
+
+eMMC RAW GPP - should say "Finished and Verified" when done, tap close
+
+NOTE! If the above 2 backups did NOT say they completed and verified, DO NOT continue
+
+4. Eject the SD (hekate will wait until reinserted) and copy backups off to secure location
+
+5. Reinsert SD
+
+6. Reformat SD (29GB for EmuMMC, rest for FAT32) - quickest way to ditch the backups - you can skip this if you have a huge SD and want the backup there for easy restoration
+
+Creating the EmuMMC
+Tap EmuMMC > Create emuMMC
+
+A popup appears: select SD Partition > Part 1
+
+Note: This will take 10-30 mins! After it completes, "Finished!" should be shown.
+
+3. Tap close
+
+4. Verify "Enabled!" is now shown in green on the left ( If emuMMC says it's disabled, tap on Change emuMMC, select your SD RAW1)
+
+Atmosphere
+Download Atmosphere and fusee-primary from github
+
+Download atmosphere sigpatches
+
+Mount the SD to Windows using USB tools in Hekate
+
+Extract the atmosphere zip to the root of the sd
+
+Open the sigpatches fusee.zip and extract the atmosphere folder to SD root (it should merge)
+
+From here you have a working system if you just inject fusee-primary, but we want hekate:
+
+6. Add a file called hekate_ipl.ini to the bootloader folder with this content:
+
+{------ Atmosphere ------}
+
+[Atmosphere CFW]
+
+payload=bootloader/payloads/fusee-primary.bin
+
+icon=bootlogo.bmp
+
+{}
+
+7. Copy fusee-primary.bin to /bootloader/payloads
+
+DO NOT REBOOT YET, CONTINUE TO INCOGNITO:
+
+Igconito (using exosphere.ini)
+Copy exosphere.ini to root of SD
+
+make sure "blank_prodinfo_emummc=1" is set, NOT "0"!
+
+90DNS
+Copy the emummc.txt file to /atmosphere/hosts (create if it doesn't exist)
+
+Other
+Rename /atmosphere/reboot_payload.bin to reboot_payload.bin.bak
+
+Rename a copy of hekate bin to reboot_payload.bin and place in same folder
+
+Note: This will cause us to boot into hekate on reboot
+
+Apps
+Copy Apps to /switch/ folder on SD
+
+Don't forget JKSV, Tinfoil installer.
+
+You can now boot into EmuNAND
+
+Tinfoil
+Install tinfoil by lauching homebrew and tapping on tinfoil installer
+
+In tinfoil add shops by selecting HTTPS source (such as xxxxxxxxx)
+
+(OPTIONAL) Tinfoil Incognito
+Note: This safeguards against a 90DNS failure or corruption/loss of the exosphere file. DO NOT DO NOT DO NOT do this unless you have a successful sysNAND backup.
+
+Boot to Hekate and use USB tools to mount the SD.
+
+Edit the exosphere.ini file to have “allow_writing_to_cal_sysmmc=1” (not “0”)
+
+Boot back into your EmuNAND and open Tinfoil
+
+Goto Incognito
+
+Press Y to remove serial, Tinfoil will warn about forgetting passwords.
+
+Enter something simple or complex, just note it somewhere. If you lose it it’s absolutely mandatory to have a NAND backup
+
+Tinfoil should say it successfully wrote to Cal0
+
+Reboot switch into Hekate and remove exosphere.ini
+
+Boot back into EmuNAND and check serial is blanked.
+
+This is permanent unless you use Tinfoil to reverse it or you restore from backup.
+
+Obviously the bottom line is with whatever incognito solution you choose: CHECK SERIAL IS BLANKED BEFORE GOING ONLINE - After this, you can re-enter Wifi
+
+You may now start installing titles.
+
